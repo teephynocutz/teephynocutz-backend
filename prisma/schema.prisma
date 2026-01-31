@@ -1,12 +1,12 @@
 // prisma/schema.prisma
 generator client {
   provider = "prisma-client" // Note: "prisma-client" is the new provider for v7
+  output   = "../generated/prisma" // REQUIRED in v7
 }
 
 
 datasource db {
-  provider = "postgresql"
-  
+  provider = "postgresql" 
 }
 
 
