@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+
+
+
+/* ─────────────────────────────
+   USER (Authenticated only)
+   ───────────────────────────── */
+model User {
+  id           String    @id @default(cuid()) // Clerk userId
+  email        String    @unique
+  username     String?
+  fullName     String?
+  phone        String?
+
+  loyaltyType  LoyaltyType? // NONE | VIP_5 | VIP_10
+
+  bookings     Booking[]
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+/* ─────────────────────────────
+   BOOKING
+   ───────────────────────────── */
+model Booking {
+  id            String       @id @default(cuid())
+
+  type          BookingType  // NORMAL | VIP | HOME
+  status        BookingStatus @default(PENDING)
+
+  date          DateTime
+  time          String       // "14:30"
+
+  totalPrice    Int          // stored in cents or Rands (you are using Rands)
+
+  /* Guest booking fields */
+  fullName      String?
+  email         String?
+  phone         String?
+
+  /* Authenticated user */
+  userId        String?
+  user          User?        @relation(fields: [userId], references: [id])
+
+  services      BookingService[]
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+/* ─────────────────────────────
+   BOOKING SERVICES (Join Table)
+   ───────────────────────────── */
+model BookingService {
+  id          String   @id @default(cuid())
+
+  bookingId  String
+  booking    Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  name        String
+  price       Int      // price at time of booking (important for history)
+
+  createdAt   DateTime @default(now())
+}
+
+/* ─────────────────────────────
+   ENUMS
+   ───────────────────────────── */
+enum BookingType {
+  NORMAL
+  VIP
+  HOME
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum LoyaltyType {
+  VIP_5   // 5% discount
+  VIP_10  // 10% discount
+}
