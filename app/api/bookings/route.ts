@@ -6,7 +6,7 @@ import { getAuthUser } from "@/lib/clerk"
 const corsHeaders = {
   "Access-Control-Allow-Origin": process.env.FRONTEND_ORIGIN!,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type",
 }
 
 export async function OPTIONS() {
