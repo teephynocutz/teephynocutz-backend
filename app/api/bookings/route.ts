@@ -22,6 +22,7 @@ export async function POST(req: Request) {
 
     const parsed = bookingSchema.safeParse(body)
     if (!parsed.success) {
+       console.error("ZOD VALIDATION FAILED:", parsed.error.format()); 
       return NextResponse.json(
         { error: parsed.error.flatten() },
         { status: 400, 
