@@ -24,7 +24,14 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders }
+        { status: 400, 
+          headers :{
+            "Content-Type": "text/html",
+            "Access-Control-Allow-Origin": "https://teephynocutz.com", // allow your frontend
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          }, 
+        }
       )
     }
 
@@ -62,13 +69,22 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { success: true, bookingId: booking.id },
-      { status: 201, headers: corsHeaders }
+      { status: 201, headers:  {
+          "Access-Control-Allow-Origin": "https://teephynocutz.com", // allow your frontend
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        }, }
     )
   } catch (error) {
     console.error("BOOKING_ERROR", error)
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: {
+            "Content-Type": "text/html",
+            "Access-Control-Allow-Origin": "https://teephynocutz.com", // allow your frontend
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          } }
     )
   }
 }
