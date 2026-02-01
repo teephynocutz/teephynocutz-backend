@@ -1,22 +1,24 @@
 import { z } from "zod"
 
 export const bookingSchema = z.object({
+  // EXACT match to frontend
   type: z.enum(["NORMAL", "VIP", "HOME"]),
 
-  date: z.string().datetime(),
-  time: z.string().min(3),
+  services: z
+    .array(
+      z.object({
+        name: z.string(),
+        price: z.number(),
+      })
+    )
+    .min(1),
 
-  services: z.array(
-    z.object({
-      name: z.string().min(1),
-      price: z.number().int().positive(),
-    })
-  ).min(1),
+  date: z.string(), // ISO string from frontend
+  time: z.string(),
 
-  totalPrice: z.number().int().positive(),
+  totalPrice: z.number(),
 
-  // Guest fields (optional, validated conditionally)
-  fullName: z.string().min(2).optional(),
+  fullName: z.string().optional(),
   email: z.string().email().optional(),
-  phone: z.string().min(7).optional(),
+  phone: z.string().optional(),
 })

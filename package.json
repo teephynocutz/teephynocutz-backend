@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "rm -rf generated && prisma generate && next build",
+    "build": "rimraf generated && prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -33,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "prisma": "^7.3.0",
+    "rimraf": "^6.1.2",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

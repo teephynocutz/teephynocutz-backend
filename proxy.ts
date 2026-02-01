@@ -3,53 +3,36 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 const isPublicRoute = createRouteMatcher([
-  "/api/(.*)",
-  "/(.*)",
+  "/", "/about", "/services","/api/bookings", "/fleet", "/quote", "/contact", "/gallery",
+  "/api/(.*)", "/confirmation", "/search", "/search/(.*)", "/views.mp4",
+  '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|mp4|webm)).*)'
 ])
 
+// Next.js 16 convention: Rename exported function to 'proxy' or keep default
 export default clerkMiddleware(async (auth, request: NextRequest) => {
-  /* ─────────────────────────────
-     1️⃣ Handle CORS preflight
-     ───────────────────────────── */
+  
+  // ✅ FIX: Allow preflight OPTIONS requests to bypass auth
   if (request.method === "OPTIONS") {
-    return new NextResponse(null, {
-      status: 204,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      },
-    })
+    return NextResponse.next()
   }
 
-  /* ─────────────────────────────
-     2️⃣ Protect non-public routes
-     ───────────────────────────── */
   if (!isPublicRoute(request)) {
     await auth.protect()
   }
 
   const response = NextResponse.next()
 
-  /* ─────────────────────────────
-     3️⃣ CORS headers (REAL REQUESTS)
-     ───────────────────────────── */
-  response.headers.set("Access-Control-Allow-Origin", "*")
-  response.headers.set(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  )
-  response.headers.set(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  )
+  response.headers.set("X-Content-Type-Options", "nosniff")
+  response.headers.set("X-Frame-Options", "DENY")
+  response.headers.set("X-XSS-Protection", "1; mode=block")
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin")
 
   return response
 })
 
 export const config = {
   matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
-    "/((?!_next|.*\\..*).*)",
   ],
 }
