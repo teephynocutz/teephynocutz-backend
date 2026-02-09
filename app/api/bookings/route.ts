@@ -2,6 +2,14 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { bookingSchema } from "@/validation/bookingSchema"
 import { getAuthUser } from "@/lib/clerk"
+import twilio from "twilio"
+
+// Initialize Twilio Client
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+)
+const ADMIN_PHONE = process.env.ADMIN_PHONE_NUMBER;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": process.env.FRONTEND_ORIGIN!,
@@ -67,6 +75,35 @@ export async function POST(req: Request) {
         },
       },
     })
+
+       // --- Production SMS Logic ---
+    const clientPhone = data.phone; // Ensure frontend sends E.164 format (+1...)
+    const msgTemplate = `Booking Confirmed! ${data.type} on ${new Date(data.date).toDateString()} @ ${data.time}.`;
+
+     // Send to both admin and client concurrently
+    const notifications = [];
+    if (clientPhone) {
+      notifications.push(twilioClient.messages.create({
+        body: `Hi ${data.fullName}, ${msgTemplate}`,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: clientPhone,
+      }));
+    }
+
+    if (ADMIN_PHONE) {
+      notifications.push(twilioClient.messages.create({
+        body: `NEW BOOKING: ${data.fullName} - ${msgTemplate}`,
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: ADMIN_PHONE,
+      }));
+    }
+
+    // use allSettled so a single failure doesn't crash the response
+    const results = await Promise.allSettled(notifications);
+    results.forEach((res, i) => {
+      if (res.status === 'rejected') console.error(`SMS ${i === 0 ? 'Client' : 'Admin'} Failed:`, res.reason);
+    });
+
 
     return NextResponse.json(
       { success: true, bookingId: booking.id },
