@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         { status: 400, 
           headers :{
             "Content-Type": "text/html",
-            "Access-Control-Allow-Origin": "https://www.teephynocutz.com", // allow your frontend
+            "Access-Control-Allow-Origin": "https://teephynocutz.com", // allow your frontend
             "Access-Control-Allow-Methods": "POST, OPTIONS",
             "Access-Control-Allow-Headers": "Content-Type",
           }, 
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { success: true, bookingId: booking.id },
       { status: 201, headers:  {
-          "Access-Control-Allow-Origin": "https://www.teephynocutz.com", // allow your frontend
+          "Access-Control-Allow-Origin": "https://teephynocutz.com", // allow your frontend
           "Access-Control-Allow-Methods": "POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
         }, }
