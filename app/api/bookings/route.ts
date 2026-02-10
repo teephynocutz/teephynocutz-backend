@@ -87,7 +87,7 @@ export async function POST(req: Request) {
         twilioClient.messages.create({
           body: `NEW BOOKING: ${data.fullName} - ${msgTemplate}`,
           from: process.env.TWILIO_PHONE_NUMBER,
-          to: ADMIN_PHONE,
+          to: "+27698490110",
         })
       )
     }
