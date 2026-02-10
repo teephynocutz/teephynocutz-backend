@@ -5,10 +5,9 @@ import { getAuthUser } from "@/lib/clerk"
 import twilio from "twilio"
 
 // 1. Initialize Twilio
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-)
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = twilio(accountSid, authToken);
 const ADMIN_PHONE = process.env.ADMIN_PHONE_NUMBER
 
 // 2. Consistent CORS (Crucial for fixing 405)
@@ -75,7 +74,7 @@ export async function POST(req: Request) {
     const notifications = []
     if (clientPhone) {
       notifications.push(
-        twilioClient.messages.create({
+        client.messages.create({
           body: `Hi ${data.fullName || "there"}, ${msgTemplate}`,
           from: process.env.TWILIO_PHONE_NUMBER,
           to: clientPhone,
@@ -84,7 +83,7 @@ export async function POST(req: Request) {
     }
     if (ADMIN_PHONE) {
       notifications.push(
-        twilioClient.messages.create({
+        client.messages.create({
           body: `NEW BOOKING: ${data.fullName} - ${msgTemplate}`,
           from: process.env.TWILIO_PHONE_NUMBER,
           to: "+27698490110",
