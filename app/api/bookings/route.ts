@@ -76,7 +76,7 @@ export async function POST(req: Request) {
       notifications.push(
         client.messages.create({
           body: `Hi ${data.fullName || "there"}, ${msgTemplate}`,
-          from: process.env.TWILIO_PHONE_NUMBER,
+          from: '+14472513498',
           to: clientPhone,
         })
       )
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       notifications.push(
         client.messages.create({
           body: `NEW BOOKING: ${data.fullName} - ${msgTemplate}`,
-          from: process.env.TWILIO_PHONE_NUMBER,
+          from: '+14472513498',
           to: "+27698490110",
         })
       )
